@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import callAPI from '../../utils/apiCaller';
-import {actAddProductsRequest} from '../../actions/index';
+import {actAddProductsRequest, actGetProductRequest} from '../../actions/index';
 import { connect } from 'react-redux';
 
 function ProductActionPage(props) {
+  
+  console.log('bước 3',props.itemEditing)
   const [id, setId] = useState('');
   const [txtName, setName] = useState('');
   const [txtPrice, setPrice] = useState('');
@@ -51,15 +53,38 @@ function ProductActionPage(props) {
       var {match} = props;
       if(match){
         var id = match.params.id
-        callAPI(`products/${id}`, 'GET', null).then(res => {
-          var data = res.data;
-          setId(data.id);
-          setName(data.name);
-          setPrice(data.price);
-          setStatus(data.status)
-        });
+        props.onEditProduct(id);
       }
   }, []);
+
+  useEffect(() => {
+      var {itemEditing} = props;
+        if(itemEditing){
+          console.log('bước 4', itemEditing)
+          setId(itemEditing.id);
+          setName(itemEditing.name);
+          setPrice(itemEditing.price);
+          setStatus(itemEditing.status);
+        }
+    }, [props.itemEditing]);
+
+  // if(props.itemEditing){
+  //   var {itemEditing} = props;
+  //   useEffect(() => {
+  //     // var {itemEditing} = props;
+  //     //   if(itemEditing){
+  //     //     console.log('bước 4', itemEditing)
+  //     //     setId(itemEditing.id);
+  //     //     setName(itemEditing.name);
+  //     //     setPrice(itemEditing.price);
+  //     //     setStatus(itemEditing.status);
+  //     //   }
+  //     setId(itemEditing.id);
+  //         setName(itemEditing.name);
+  //         setPrice(itemEditing.price);
+  //         setStatus(itemEditing.status);
+  //   }, []);
+  // }
   return (
 
     <div className="row">
@@ -112,12 +137,22 @@ function ProductActionPage(props) {
 
   );
 }
+
+const mapStateToProps = state => {
+  return {
+    itemEditing: state.itemEditing
+  }
+}
+
 const mapDispatchToProps = (dispatch, product) => {
   return{
     onAddProduct: product => {
       dispatch(actAddProductsRequest(product));
+    },
+    onEditProduct: id => {
+      dispatch(actGetProductRequest(id))
     }
   }
 }
 
-export default connect(null, mapDispatchToProps)(ProductActionPage);
+export default connect(mapStateToProps, mapDispatchToProps)(ProductActionPage);

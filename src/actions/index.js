@@ -43,3 +43,18 @@ export const actAddProducts = (product) =>{
     product
   }
 }
+export const actGetProductRequest = id => {
+  return dispatch => {
+    return callAPI(`products/${id}`, 'GET', null).then(res => {
+      console.log('bước 2',res.data)
+      
+      dispatch(actGetProduct(res.data))
+    });
+  }
+}
+export const actGetProduct = product => {
+  return{
+    type: types.EDIT_PRODUCTS,
+    product
+  }
+}
