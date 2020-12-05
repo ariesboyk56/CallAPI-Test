@@ -1,12 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import callAPI from '../../utils/apiCaller';
-import {actAddProductsRequest, actGetProductRequest} from '../../actions/index';
+import {actAddProductsRequest, actGetProductRequest, actUpdateProductRequest} from '../../actions/index';
 import { connect } from 'react-redux';
 
 function ProductActionPage(props) {
-  
-  console.log('bước 3',props.itemEditing)
   const [id, setId] = useState('');
   const [txtName, setName] = useState('');
   const [txtPrice, setPrice] = useState('');
@@ -36,18 +33,11 @@ function ProductActionPage(props) {
     }
     e.preventDefault();
     if(id){ // edit
-      callAPI(`products/${id}`, 'PUT',{
-        name: txtName,
-        price: txtPrice,
-        status: chStatus
-      }).then(res=>{
-        history.goBack();
-      });
+      props.onUpdateProduct(product);
     }else{ // add
       props.onAddProduct(product);
-      history.goBack();
     }
-    
+    history.goBack();
   }
   useEffect(() => {
       var {match} = props;
@@ -60,7 +50,6 @@ function ProductActionPage(props) {
   useEffect(() => {
       var {itemEditing} = props;
         if(itemEditing){
-          console.log('bước 4', itemEditing)
           setId(itemEditing.id);
           setName(itemEditing.name);
           setPrice(itemEditing.price);
@@ -68,23 +57,6 @@ function ProductActionPage(props) {
         }
     }, [props.itemEditing]);
 
-  // if(props.itemEditing){
-  //   var {itemEditing} = props;
-  //   useEffect(() => {
-  //     // var {itemEditing} = props;
-  //     //   if(itemEditing){
-  //     //     console.log('bước 4', itemEditing)
-  //     //     setId(itemEditing.id);
-  //     //     setName(itemEditing.name);
-  //     //     setPrice(itemEditing.price);
-  //     //     setStatus(itemEditing.status);
-  //     //   }
-  //     setId(itemEditing.id);
-  //         setName(itemEditing.name);
-  //         setPrice(itemEditing.price);
-  //         setStatus(itemEditing.status);
-  //   }, []);
-  // }
   return (
 
     <div className="row">
@@ -151,6 +123,9 @@ const mapDispatchToProps = (dispatch, product) => {
     },
     onEditProduct: id => {
       dispatch(actGetProductRequest(id))
+    },
+    onUpdateProduct: product => {
+      dispatch(actUpdateProductRequest(product));
     }
   }
 }
