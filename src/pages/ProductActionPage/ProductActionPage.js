@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import callAPI from '../../utils/apiCaller';
+import {actAddProductsRequest} from '../../actions/index';
+import { connect } from 'react-redux';
 
 function ProductActionPage(props) {
   const [id, setId] = useState('');
   const [txtName, setName] = useState('');
   const [txtPrice, setPrice] = useState('');
   const [chStatus, setStatus] = useState('');
+  
   const onChange = (e) => {
     var target = e.target;
     var name = target.name;
@@ -23,6 +26,12 @@ function ProductActionPage(props) {
   }
   const onSave = (e) => {
     var {history} = props;
+    var product = {
+      id: id,
+      name: txtName,
+      price: txtPrice,
+      status: chStatus
+    }
     e.preventDefault();
     if(id){ // edit
       callAPI(`products/${id}`, 'PUT',{
@@ -33,13 +42,8 @@ function ProductActionPage(props) {
         history.goBack();
       });
     }else{ // add
-      callAPI('products', 'POST', {
-        name: txtName,
-        price: txtPrice,
-        status: chStatus
-      }).then(res=>{
-        history.goBack();
-      });
+      props.onAddProduct(product);
+      history.goBack();
     }
     
   }
@@ -108,5 +112,12 @@ function ProductActionPage(props) {
 
   );
 }
+const mapDispatchToProps = (dispatch, product) => {
+  return{
+    onAddProduct: product => {
+      dispatch(actAddProductsRequest(product));
+    }
+  }
+}
 
-export default ProductActionPage;
+export default connect(null, mapDispatchToProps)(ProductActionPage);

@@ -3,7 +3,6 @@ import ProductList from '../../components/ProductList/ProductList';
 import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import callAPI from '../../utils/apiCaller';
 import {actFetchProductsRequest, actDeleteProductsRequest} from '../../actions/index';
 
 
